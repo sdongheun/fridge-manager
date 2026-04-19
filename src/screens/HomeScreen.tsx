@@ -4,9 +4,9 @@ import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../constants/colors';
 import { FoodFormCard, type FoodFormValue } from '../features/foods/components/FoodFormCard';
 import { FoodListCard } from '../features/foods/components/FoodListCard';
+import { Food } from '../features/foods/models/Food';
 import { createFood, deleteFood, loadFoods } from '../features/foods/storage';
 import type { FoodItem } from '../features/foods/types';
-import { sortFoodsByExpiry } from '../features/foods/utils/expiry';
 
 const INITIAL_FORM: FoodFormValue = {
   name: '',
@@ -26,7 +26,7 @@ export function HomeScreen() {
       try {
         const storedFoods = await loadFoods();
         if (isMounted) {
-          setFoods(sortFoodsByExpiry(storedFoods));
+          setFoods(Food.sortItems(storedFoods));
         }
       } catch (error) {
         if (isMounted) {
@@ -58,7 +58,7 @@ export function HomeScreen() {
     setIsSaving(true);
     try {
       const createdFood = await createFood({ name, expiryDate });
-      setFoods((currentFoods) => sortFoodsByExpiry([createdFood, ...currentFoods]));
+      setFoods((currentFoods) => Food.sortItems([createdFood, ...currentFoods]));
       setForm(INITIAL_FORM);
     } catch (error) {
       Alert.alert('저장 실패', error instanceof Error ? error.message : '식재료를 저장하지 못했습니다.');
@@ -70,7 +70,7 @@ export function HomeScreen() {
   async function handleDeleteFood(foodId: string) {
     try {
       const nextFoods = await deleteFood(foodId);
-      setFoods(sortFoodsByExpiry(nextFoods));
+      setFoods(Food.sortItems(nextFoods));
     } catch (error) {
       Alert.alert('삭제 실패', error instanceof Error ? error.message : '식재료를 삭제하지 못했습니다.');
     }

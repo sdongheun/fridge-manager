@@ -1,9 +1,8 @@
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../../../constants/colors';
+import { Food } from '../models/Food';
 import type { FoodItem } from '../types';
-import { getDaysUntilExpiry, getFoodStatus, getFoodStatusLabel } from '../utils/expiry';
-import { getExpiryCountdownLabel } from '../utils/presentation';
 
 interface FoodListCardProps {
   foods: FoodItem[];
@@ -31,19 +30,18 @@ export function FoodListCard({ foods, isLoading, onDeleteFood }: FoodListCardPro
             </View>
           }
           renderItem={({ item }) => {
-            const daysUntilExpiry = getDaysUntilExpiry(item.expiryDate);
-            const status = getFoodStatus(daysUntilExpiry);
+            const food = Food.fromItem(item);
 
             return (
               <View style={styles.foodRow}>
                 <View style={styles.foodTextBlock}>
                   <Text style={styles.foodName}>{item.name}</Text>
                   <Text style={styles.foodMeta}>
-                    {item.expiryDate} · {getFoodStatusLabel(status)}
+                    {item.expiryDate} · {food.statusLabel}
                   </Text>
                 </View>
                 <View style={styles.foodActions}>
-                  <Text style={styles.foodDays}>{getExpiryCountdownLabel(daysUntilExpiry)}</Text>
+                  <Text style={styles.foodDays}>{food.expiryCountdownLabel}</Text>
                   <Pressable
                     accessibilityRole="button"
                     onPress={() => onDeleteFood(item.id)}
