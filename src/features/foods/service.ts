@@ -1,5 +1,4 @@
 import { AuthSessionRepository } from '../auth/session';
-import { FridgeRepository } from '../fridges/repository';
 import { FoodRepository } from './repository';
 import type { FoodItem, FoodItemWriteInput } from './types';
 
@@ -11,7 +10,6 @@ export interface CreateFoodInput {
 export class FoodService {
   constructor(
     private readonly authSessionRepository: AuthSessionRepository,
-    private readonly fridgeRepository: FridgeRepository,
     private readonly foodRepository: FoodRepository,
   ) {}
 
@@ -22,16 +20,17 @@ export class FoodService {
       return [];
     }
 
-    const fridge = await this.fridgeRepository.getOwnedFridgeByUserId(currentUser.id);
-    return this.foodRepository.listByFridge(currentUser.id, fridge.id);
+    // Legacy migration-based fridge flow is disabled because the live DB has no fridges table.
+    // const fridge = await this.fridgeRepository.getOwnedFridgeByUserId(currentUser.id);
+    // return this.foodRepository.listByFridge(currentUser.id, fridge.id);
+    return this.foodRepository.listByUser(currentUser.id);
   }
 
   async createFood(input: CreateFoodInput) {
     const currentUser = await this.authSessionRepository.requireCurrentUser();
-    const fridge = await this.fridgeRepository.getOwnedFridgeByUserId(currentUser.id);
 
     const nextInput: FoodItemWriteInput = {
-      fridgeId: fridge.id,
+      // Legacy migration-based fridge linkage is disabled because the live DB has no fridges table.
       name: input.name.trim(),
       expiryDate: input.expiryDate,
     };
@@ -47,12 +46,10 @@ export class FoodService {
 }
 
 const authSessionRepository = new AuthSessionRepository();
-const fridgeRepository = new FridgeRepository();
 const foodRepository = new FoodRepository();
 
 export const foodService = new FoodService(
   authSessionRepository,
-  fridgeRepository,
   foodRepository,
 );
 

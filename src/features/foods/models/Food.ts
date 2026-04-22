@@ -1,7 +1,8 @@
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
-import type { FoodItem, FoodStatus } from '../types';
+import type { FoodItem, FoodStatus } from "../types";
 
+// 음식 모델 클래스
 export class Food {
   constructor(private readonly item: FoodItem) {}
 
@@ -10,7 +11,9 @@ export class Food {
   }
 
   static sortItems(foods: FoodItem[]) {
-    return [...foods].sort((left, right) => Food.fromItem(left).compareExpiry(right));
+    return [...foods].sort((left, right) =>
+      Food.fromItem(left).compareExpiry(right),
+    );
   }
 
   get snapshot() {
@@ -18,29 +21,31 @@ export class Food {
   }
 
   get daysUntilExpiry() {
-    return dayjs(this.item.expiryDate).startOf('day').diff(dayjs().startOf('day'), 'day');
+    return dayjs(this.item.expiryDate)
+      .startOf("day")
+      .diff(dayjs().startOf("day"), "day");
   }
 
   get status(): FoodStatus {
     if (this.daysUntilExpiry <= 0) {
-      return 'expired';
+      return "expired";
     }
 
     if (this.daysUntilExpiry <= 3) {
-      return 'soon';
+      return "soon";
     }
 
-    return 'fresh';
+    return "fresh";
   }
 
   get statusLabel() {
     switch (this.status) {
-      case 'fresh':
-        return 'Fresh';
-      case 'soon':
-        return 'Soon';
-      case 'expired':
-        return 'Expired';
+      case "fresh":
+        return "Fresh";
+      case "soon":
+        return "Soon";
+      case "expired":
+        return "Expired";
     }
   }
 
@@ -50,7 +55,7 @@ export class Food {
     }
 
     if (this.daysUntilExpiry === 0) {
-      return '오늘 만료';
+      return "오늘 만료";
     }
 
     return `${this.daysUntilExpiry}일 남음`;

@@ -1,14 +1,14 @@
-import type { Session, User } from '@supabase/supabase-js';
+import type { Session, User } from "@supabase/supabase-js";
 
-import { supabase } from '../../lib/supabase/client';
-import type { AuthCredentials, AuthUser, SignUpInput } from './types';
+import { supabase } from "../../lib/supabase/client";
+import type { AuthCredentials, AuthUser, SignUpInput } from "./types";
 
+// 실제 인증 동작을 처리
 function mapAuthUser(session: Session | null): AuthUser | null {
   return mapUser(session?.user ?? null);
 }
 
 function mapUser(user: User | null): AuthUser | null {
-
   if (!user) {
     return null;
   }
@@ -16,9 +16,10 @@ function mapUser(user: User | null): AuthUser | null {
   return {
     id: user.id,
     email: user.email ?? null,
-    displayName: typeof user.user_metadata.display_name === 'string'
-      ? user.user_metadata.display_name
-      : null,
+    displayName:
+      typeof user.user_metadata.display_name === "string"
+        ? user.user_metadata.display_name
+        : null,
   };
 }
 

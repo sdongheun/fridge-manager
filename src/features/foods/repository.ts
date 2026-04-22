@@ -5,7 +5,8 @@ function mapFoodItem(row: FoodItemRow): FoodItem {
   return {
     id: row.id,
     userId: row.user_id,
-    fridgeId: row.fridge_id,
+    // Legacy migration-based fridge linkage is disabled because the live DB has no fridge_id column.
+    fridgeId: row.fridge_id ?? undefined,
     name: row.name,
     expiryDate: row.expiry_date,
     purchaseDate: row.purchase_date ?? undefined,
@@ -21,12 +22,28 @@ function mapFoodItem(row: FoodItemRow): FoodItem {
 }
 
 export class FoodRepository {
-  async listByFridge(userId: string, fridgeId: string) {
+  // Legacy migration-based fridge query is disabled because the live DB has no fridges table.
+  // async listByFridge(userId: string, fridgeId: string) {
+  //   const { data, error } = await supabase
+  //     .from('food_items')
+  //     .select('*')
+  //     .eq('user_id', userId)
+  //     .eq('fridge_id', fridgeId)
+  //     .order('expiry_date', { ascending: true })
+  //     .order('created_at', { ascending: true });
+  //
+  //   if (error) {
+  //     throw error;
+  //   }
+  //
+  //   return (data as FoodItemRow[]).map(mapFoodItem);
+  // }
+
+  async listByUser(userId: string) {
     const { data, error } = await supabase
       .from('food_items')
       .select('*')
       .eq('user_id', userId)
-      .eq('fridge_id', fridgeId)
       .order('expiry_date', { ascending: true })
       .order('created_at', { ascending: true });
 
@@ -40,16 +57,9 @@ export class FoodRepository {
   async create(userId: string, input: FoodItemWriteInput) {
     const payload = {
       user_id: userId,
-      fridge_id: input.fridgeId,
       name: input.name,
       expiry_date: input.expiryDate,
-      purchase_date: input.purchaseDate ?? null,
       quantity: input.quantity ?? null,
-      unit: input.unit ?? null,
-      memo: input.memo ?? null,
-      category: input.category ?? null,
-      storage_zone: input.storageZone ?? null,
-      barcode: input.barcode ?? null,
     };
 
     const { data, error } = await supabase
@@ -67,16 +77,9 @@ export class FoodRepository {
 
   async update(userId: string, id: string, input: Partial<FoodItemWriteInput>) {
     const payload = {
-      ...(input.fridgeId ? { fridge_id: input.fridgeId } : {}),
       ...(input.name ? { name: input.name } : {}),
       ...(input.expiryDate ? { expiry_date: input.expiryDate } : {}),
-      ...(input.purchaseDate !== undefined ? { purchase_date: input.purchaseDate ?? null } : {}),
       ...(input.quantity !== undefined ? { quantity: input.quantity ?? null } : {}),
-      ...(input.unit !== undefined ? { unit: input.unit ?? null } : {}),
-      ...(input.memo !== undefined ? { memo: input.memo ?? null } : {}),
-      ...(input.category !== undefined ? { category: input.category ?? null } : {}),
-      ...(input.storageZone !== undefined ? { storage_zone: input.storageZone ?? null } : {}),
-      ...(input.barcode !== undefined ? { barcode: input.barcode ?? null } : {}),
     };
 
     const { data, error } = await supabase
@@ -105,7 +108,25 @@ export class FoodRepository {
 
 const foodRepository = new FoodRepository();
 
-export async function listFoodItems(fridgeId: string) {
+// Legacy migration-based fridge query is disabled because the live DB has no fridges table.
+// export async function listFoodItems(fridgeId: string) {
+//   const {
+//     data: { user },
+//     error,
+//   } = await supabase.auth.getUser();
+//
+//   if (error) {
+//     throw error;
+//   }
+//
+//   if (!user) {
+//     throw new Error('로그인이 필요합니다.');
+//   }
+//
+//   return foodRepository.listByFridge(user.id, fridgeId);
+// }
+
+export async function listFoodItems() {
   const {
     data: { user },
     error,
@@ -119,7 +140,7 @@ export async function listFoodItems(fridgeId: string) {
     throw new Error('로그인이 필요합니다.');
   }
 
-  return foodRepository.listByFridge(user.id, fridgeId);
+  return foodRepository.listByUser(user.id);
 }
 
 export async function createFoodItem(input: FoodItemWriteInput) {

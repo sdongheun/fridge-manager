@@ -1,3 +1,4 @@
+// 로그인/회원가입 데이터 타입 선언
 export interface AuthCredentials {
   email: string;
   password: string;
