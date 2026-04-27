@@ -8,8 +8,8 @@
 1. 이 문서를 읽는다.
 2. `docs/mvp.md`를 읽는다.
 3. 현재 작업과 관련된 영역 문서만 읽는다.
-   - UI, 화면, 컴포넌트, 스타일링: `docs/frontend.md`
-   - 저장소, 데이터 모델, 영속성, 향후 API 구조: `docs/backend.md`
+   - UI, 화면, 컴포넌트, 스타일링: `docs/frontend/frontend.md`
+   - 저장소, 데이터 모델, 영속성, 향후 API 구조: `docs/backend/backend.md`
 4. 현재 작업과 직접 관련된 소스 파일만 확인한다.
 5. 작업을 끝까지 완료할 수 있는 가장 작은 합리적 변경을 적용한다.
 
@@ -31,7 +31,7 @@
 ## 기준 우선순위
 1. 현재 스레드에서 사용자가 직접 준 지시
 2. `docs/mvp.md`
-3. `docs/frontend.md`, `docs/backend.md`에 적힌 영역별 규칙
+3. `docs/frontend/frontend.md`, `docs/backend/backend.md`에 적힌 영역별 규칙
 4. 저장소 안에 이미 존재하는 코드 패턴
 
 ## 브랜치와 스레드 원칙
@@ -48,6 +48,6 @@
 
 ## 문서 갱신 규칙
 - `docs/mvp.md`는 제품 범위나 방향이 바뀔 때만 수정한다.
-- `docs/frontend.md`는 UI 구조나 프론트엔드 규칙이 바뀔 때 수정한다.
-- `docs/backend.md`는 데이터 구조, 저장 방식, API 경계가 바뀔 때 수정한다.
+- `docs/frontend/frontend.md`는 UI 구조나 프론트엔드 규칙이 바뀔 때 수정한다.
+- `docs/backend/backend.md`는 데이터 구조, 저장 방식, API 경계가 바뀔 때 수정한다.
 - 문서는 짧고, 구체적이고, 실제 작업에 바로 쓸 수 있게 유지한다.
